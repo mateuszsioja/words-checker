@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.w3.org/1999/XSL/Transform">
+<head>
+    <meta charset="UTF-8"></meta>
+    <title>Words Checker</title>
+</head>
+<body>
+
+<h1>Podaj słowo lub zdanie, które chcesz sprawdzić</h1>
+
+
+<form action="/check-language" method="POST">
+    <input type="text" name="string" /><br/><br/>
+    <input type="submit" value="Sprawdź język" />
+</form>
+
+
+<span th:if="${result}">
+     <p th:text="'Hello, ' + ${result} + '!'" />
+</span>
+
+</body>
+</html>
