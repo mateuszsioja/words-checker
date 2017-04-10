@@ -18,7 +18,7 @@ public class LanguageService {
     @Autowired
     private EnglishDictionary englishDictionary;
 
-    private static final String PL = "LANGUAGE/POLISH";
+    public static final String PL = "LANGUAGE/POLISH";
     private static final String EN = "LANGUAGE/ENGLISH";
     private static final String UNKNOWN = "LANGUAGE/?";
 

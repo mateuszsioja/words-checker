@@ -25,6 +25,7 @@ public class InitDictionaryService {
 
     private static final String PL_DICTIONARY_FILE_NAME = "dictionaries/polish-words.txt";
     private static final String EN_DICTIONARY_FILE_NAME = "dictionaries/english-words.txt";
+    private static final String PUNCTUATION_DICTIONARY_FILE_NAME = "dictionaries/punctuation-words.txt";
 
     @PostConstruct
     public void initDictionaries() throws URISyntaxException {
