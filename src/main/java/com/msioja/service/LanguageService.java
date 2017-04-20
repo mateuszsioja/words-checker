@@ -18,16 +18,19 @@ public class LanguageService {
     @Autowired
     private EnglishDictionary englishDictionary;
 
-    public static final String PL = "LANGUAGE/POLISH";
+    static final String PL = "LANGUAGE/POLISH";
     private static final String EN = "LANGUAGE/ENGLISH";
     private static final String UNKNOWN = "LANGUAGE/?";
+
+    private static final String IGNORED_CHARS = "[\\-+.\\^:,?!'\"()\\[\\];<>]";
+    private static final String SPLIT_WORDS_REGEX = "\\s* \\s*";
 
 
     public String checkLanguage(String textToCheck) {
         int polishWordsCounter = 0, englishWordsCounter = 0;
 
-        textToCheck = textToCheck.replaceAll("[\\-+.\\^:,?!'\"()\\[\\];<>]", "").trim().toLowerCase();
-        List<String> wordsToCheck = Arrays.asList(textToCheck.split("\\s* \\s*"));
+        textToCheck = textToCheck.replaceAll(IGNORED_CHARS, "").trim().toLowerCase();
+        List<String> wordsToCheck = Arrays.asList(textToCheck.split(SPLIT_WORDS_REGEX));
         List<String> resultOfWordChecks = wordsToCheck.stream()
                 .map(this::checkWordLanguage).collect(Collectors.toList());
 

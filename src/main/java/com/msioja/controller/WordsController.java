@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 @Controller
 public class WordsController {
 
@@ -33,9 +35,9 @@ public class WordsController {
         return "home";
     }
 
-    @RequestMapping(value = "check-punctuation", method = RequestMethod.POST)
+    @RequestMapping(value = "/check-punctuation", method = RequestMethod.POST)
     public String checkPunctuation(Model model, @RequestParam(value = "string") String stringToCheck) {
-        String result = punctuationService.checkPunctuation(stringToCheck);
+        List<String> result = punctuationService.checkPunctuation(stringToCheck);
         model.addAttribute("result", result);
         return "home";
     }
