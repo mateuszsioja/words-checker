@@ -38,6 +38,10 @@
      <p th:text="'Hello, ' + ${result} + '!'" />
 </span>
 
+<ul th:if="${result2}">
+    <li th:each="e : ${result2}" th:text="${e.getType()} + ${e.getText()}"></li>
+</ul>
+
 
 </body>
 </html>

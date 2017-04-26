@@ -1,5 +1,6 @@
 package com.msioja.controller;
 
+import com.msioja.model.PunctuationError;
 import com.msioja.service.LanguageService;
 import com.msioja.service.PunctuationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +38,8 @@ public class WordsController {
 
     @RequestMapping(value = "/check-punctuation", method = RequestMethod.POST)
     public String checkPunctuation(Model model, @RequestParam(value = "string") String stringToCheck) {
-        List<String> result = punctuationService.checkPunctuation(stringToCheck);
-        model.addAttribute("result", result);
+        List<PunctuationError> result = punctuationService.checkPunctuation(stringToCheck);
+        model.addAttribute("result2", result);
         return "home";
     }
 }

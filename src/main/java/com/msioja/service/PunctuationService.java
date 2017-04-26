@@ -1,58 +1,71 @@
 package com.msioja.service;
 
-import com.msioja.model.PolishDictionary;
+import com.msioja.model.PunctuationError;
+import com.msioja.model.ShortcutsDictionary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.apache.commons.lang3.StringUtils;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.msioja.service.Constants.SPLIT_SENTENCE_BY_DOT_REGEX;
 
 @Service
 public class PunctuationService {
 
+    private final ShortcutsDictionary shortcutsDictionary;
+
+    private static final String FIRST_LETTER_NOT_UPPERCASE = "Zdanie powinno zaczynać się od wielkiej litery.";
+    private static final String LACK_OF_SPACE_AFTER_COMMA = "Po przecinku stawiamy spacje";
+
+    private List<PunctuationError> abnormalities;
+
     @Autowired
-    private LanguageService languageService;
+    public PunctuationService(ShortcutsDictionary shortcutsDictionary) {
+        this.shortcutsDictionary = shortcutsDictionary;
+    }
 
-    private static final String SPLIT_SENTENCES_REGEX = ".|\\?|!";
-
-    private static final String LANGUAGE_NOT_SUPPORT = "Błędy interpunkcyjne nie są sprawdzane dla tekstu w podanym języku.";
-    private static final String FIRST_LETTER_NOT_UPPERCASE = "Zdanie powinno zaczynać się od wilekiej litery.";
-
-    private List<String> abnormalities;
-
-    public List<String> checkPunctuation(String stringToCheck) {
+    public List<PunctuationError> checkPunctuation(String stringToCheck) {
         abnormalities = new ArrayList<>();
-        String language = languageService.checkLanguage(stringToCheck);
-//        if(!language.equals(LanguageService.PL)) {
-//            abnormalities.add(LANGUAGE_NOT_SUPPORT);
-//            return abnormalities;
-//        }
-        splitIntoSentencesAndCheck(stringToCheck);
+        List<String> sentences = splitIntoSentences(stringToCheck);
+        sentences.forEach(this::checkIfSentenceStartsWithUppercase);
         return abnormalities;
     }
 
-    private List<String> splitIntoSentencesAndCheck(String textToSplit) {
-        List<String> sentencesToCheck = new ArrayList<>();
-
+    private List<String> splitIntoSentences(String textToSplit) {
+        List<String> sentences = new ArrayList<>();
         BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
-        String source = "This is a test. This is a T.L.A. test. Now with a Dr. in it.";
         iterator.setText(textToSplit);
         int start = iterator.first();
         for (int end = iterator.next();
              end != BreakIterator.DONE;
              start = end, end = iterator.next()) {
-            sentencesToCheck.add(textToSplit.substring(start,end));
+            sentences.add(textToSplit.substring(start, end));
         }
+        return sentences;
+    }
 
-        sentencesToCheck.forEach(sentence -> {
-            if (Character.isLowerCase(sentence.charAt(0))) {
-                abnormalities.add(FIRST_LETTER_NOT_UPPERCASE);
+    private void checkIfSentenceStartsWithUppercase(String sentence) {
+        List<String> splitSentenceByDot = Arrays.asList(sentence.split(SPLIT_SENTENCE_BY_DOT_REGEX));
+        boolean checkNext = true;
+
+        for (String split : splitSentenceByDot) {
+            if (Character.isLowerCase(split.charAt(0)) && checkNext) {
+                abnormalities.add(new PunctuationError(FIRST_LETTER_NOT_UPPERCASE, split));
             }
-        });
-        return null;
+            for (String shortcut : shortcutsDictionary.getWords()) {
+                Pattern p = Pattern.compile("[\\s,]" + shortcut);
+                Matcher m = p.matcher(split);
+                if (m.find()) {
+                    checkNext = false;
+                    break;
+                } else checkNext = true;
+            }
+        }
     }
 }

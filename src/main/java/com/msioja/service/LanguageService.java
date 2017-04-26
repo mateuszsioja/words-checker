@@ -9,22 +9,24 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.msioja.service.Constants.IGNORED_CHARS;
+import static com.msioja.service.Constants.SPLIT_WORDS_REGEX;
+
 @Service
 public class LanguageService {
 
-    @Autowired
-    private PolishDictionary polishDictionary;
+    private final PolishDictionary polishDictionary;
+    private final EnglishDictionary englishDictionary;
+
+    private static final String PL = "Wykryto jezyk polski.";
+    private static final String EN = "Wykryto jezyk angielski.";
+    private static final String UNKNOWN = "Nie rozpoznano jezyka.";
 
     @Autowired
-    private EnglishDictionary englishDictionary;
-
-    static final String PL = "LANGUAGE/POLISH";
-    private static final String EN = "LANGUAGE/ENGLISH";
-    private static final String UNKNOWN = "LANGUAGE/?";
-
-    private static final String IGNORED_CHARS = "[\\-+.\\^:,?!'\"()\\[\\];<>]";
-    private static final String SPLIT_WORDS_REGEX = "\\s* \\s*";
-
+    public LanguageService(PolishDictionary polishDictionary, EnglishDictionary englishDictionary) {
+        this.polishDictionary = polishDictionary;
+        this.englishDictionary = englishDictionary;
+    }
 
     public String checkLanguage(String textToCheck) {
         int polishWordsCounter = 0, englishWordsCounter = 0;
