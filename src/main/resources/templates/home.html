@@ -24,12 +24,12 @@
 
 
 <form action="/check-language" method="POST">
-    <textarea rows="6" cols="50" name="string"></textarea><br/><br/>
+    <textarea rows="6" cols="50" name="string" th:inline="text">[[${previousLanguageText}]]</textarea><br/><br/>
     <input type="submit" value="Sprawdź język" />
 </form>
 
 <form action="/check-punctuation" method="POST">
-    <textarea rows="6" cols="50" name="string"></textarea><br/><br/>
+    <textarea rows="6" cols="50" name="string" th:inline="text">[[${previousPunctuationText}]]</textarea><br/><br/>
     <input type="submit" value="Sprawdź interpunkcję" />
 </form>
 

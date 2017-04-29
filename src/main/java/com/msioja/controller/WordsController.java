@@ -25,7 +25,9 @@ public class WordsController {
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String home() {
+    public String home(Model model) {
+        model.addAttribute("previousLanguageText", "");
+        model.addAttribute("previousPunctuationText", "");
         return "home";
     }
 
@@ -33,6 +35,8 @@ public class WordsController {
     public String checkLanguage(Model model, @RequestParam(value = "string") String wordToCheck) {
         String result = languageService.checkLanguage(wordToCheck);
         model.addAttribute("result", result);
+        model.addAttribute("previousLanguageText", wordToCheck != null ? wordToCheck : "");
+        model.addAttribute("previousPunctuationText", "");
         return "home";
     }
 
@@ -40,6 +44,8 @@ public class WordsController {
     public String checkPunctuation(Model model, @RequestParam(value = "string") String stringToCheck) {
         List<PunctuationError> result = punctuationService.checkPunctuation(stringToCheck);
         model.addAttribute("result2", result);
+        model.addAttribute("previousPunctuationText", stringToCheck != null ? stringToCheck : "");
+        model.addAttribute("previousLanguageText", "");
         return "home";
     }
 }

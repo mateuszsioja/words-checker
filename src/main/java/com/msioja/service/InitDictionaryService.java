@@ -2,6 +2,7 @@ package com.msioja.service;
 
 import com.msioja.model.EnglishDictionary;
 import com.msioja.model.PolishDictionary;
+import com.msioja.model.PunctuationDictionary;
 import com.msioja.model.ShortcutsDictionary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class InitDictionaryService {
     private PolishDictionary polishDictionary;
     private EnglishDictionary englishDictionary;
     private ShortcutsDictionary shortcutsDictionary;
+    private PunctuationDictionary punctuationDictionary;
 
     private static final String PL_DICTIONARY_FILE_NAME = "dictionaries/polish-words.txt";
     private static final String EN_DICTIONARY_FILE_NAME = "dictionaries/english-words.txt";
@@ -30,10 +32,12 @@ public class InitDictionaryService {
     @Autowired
     public InitDictionaryService(PolishDictionary polishDictionary,
                                  EnglishDictionary englishDictionary,
-                                 ShortcutsDictionary shortcutsDictionary) {
+                                 ShortcutsDictionary shortcutsDictionary,
+                                 PunctuationDictionary punctuationDictionary) {
         this.polishDictionary = polishDictionary;
         this.englishDictionary = englishDictionary;
         this.shortcutsDictionary = shortcutsDictionary;
+        this.punctuationDictionary = punctuationDictionary;
     }
 
     @PostConstruct
@@ -41,6 +45,7 @@ public class InitDictionaryService {
         polishDictionary.setWords(importWords(PL_DICTIONARY_FILE_NAME));
         englishDictionary.setWords(importWords(EN_DICTIONARY_FILE_NAME));
         shortcutsDictionary.setWords(importWords(SHORTCUTS_DICTIONARY_FILE_NAME));
+        punctuationDictionary.setWords(importWords(PUNCTUATION_DICTIONARY_FILE_NAME));
     }
 
     private HashSet<String> importWords(String fileName) throws URISyntaxException {

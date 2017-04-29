@@ -9,8 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.msioja.service.Constants.IGNORED_CHARS;
-import static com.msioja.service.Constants.SPLIT_WORDS_REGEX;
+import static com.msioja.service.Constants.*;
 
 @Service
 public class LanguageService {
