@@ -3,7 +3,6 @@ acz
 aczkolwiek
 albowiem
 azali
-aż
 ażeby
 bo
 boć
@@ -25,7 +24,6 @@ dokąd
 dokądkolwiek
 dopiero
 dopóki
-gdy
 gdyby
 gdyż
 gdzie
@@ -35,7 +33,6 @@ ilekolwiek
 ilekroć
 ile razy
 im
-iż
 iżby
 jak
 jakby
@@ -45,9 +42,7 @@ jakkolwiek
 jako
 jakoby
 jakżeby
-jeśli
 jeśliby
-jeżeli
 jeżeliby
 kędy
 kiedy
@@ -72,8 +67,5 @@ skądkolwiek
 skoro
 zaledwie
 zanim
-zwłaszcza jeżeli
-zwłaszcza kiedy
-że
 że aż
 żeby
