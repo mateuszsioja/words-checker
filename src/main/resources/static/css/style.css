@@ -1,0 +1,33 @@
+#container {
+    width:1000px;
+    margin-left:auto;
+    margin-right:auto;
+}
+#language {
+    float: left;
+    padding-right: 50px;
+}
+#punctuation {
+    float: left;
+}
+#result-punctuation {
+    clear: both;
+    width:700px;
+    padding-top: 30px;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-left: 20px;
+}
+th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+h1 {
+    padding-left: 40px;
+}
+input {
+    margin-left: 10px;
+}

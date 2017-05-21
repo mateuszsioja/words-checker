@@ -10,38 +10,70 @@
             crossorigin="anonymous"></script>
 
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"></link>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous"></link>
 
     <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"></link>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+          crossorigin="anonymous"></link>
 
     <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script></head>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"></link>
+</head>
 
 <body>
+<div id="container">
+    <h1>Wprowadź tekst, który chcesz sprawdzić</h1>
+    <br/><br/>
 
-<h1>Podaj słowo lub zdanie, które chcesz sprawdzić</h1>
+    <div id="language">
+        <form action="/check-language" method="POST">
+            <textarea rows="6" cols="50" name="string" th:inline="text">[[${previousLanguageText}]]</textarea><br/><br/>
+            <input type="submit" value="Sprawdź język"/>
+        </form>
 
+        <div th:if="${time1}">
+            <br/>
+            <h5 th:text="${time1}"></h5>
+        </div>
 
-<form action="/check-language" method="POST">
-    <textarea rows="6" cols="50" name="string" th:inline="text">[[${previousLanguageText}]]</textarea><br/><br/>
-    <input type="submit" value="Sprawdź język" />
-</form>
+        <br/>
+        <div th:if="${result}">
+            <h4 th:text="${result}"></h4>
+        </div>
+    </div>
 
-<form action="/check-punctuation" method="POST">
-    <textarea rows="6" cols="50" name="string" th:inline="text">[[${previousPunctuationText}]]</textarea><br/><br/>
-    <input type="submit" value="Sprawdź interpunkcję" />
-</form>
+    <div id="punctuation">
+        <form action="/check-punctuation" method="POST">
+            <textarea rows="6" cols="50" name="string"
+                      th:inline="text">[[${previousPunctuationText}]]</textarea><br/><br/>
+            <input type="submit" value="Sprawdź interpunkcję"/>
+        </form>
 
+        <div th:if="${time2}">
+            <br/>
+            <h5 th:text="${time2}"></h5>
+        </div>
+    </div>
 
-<span th:if="${result}">
-     <p th:text="'Hello, ' + ${result} + '!'" />
-</span>
-
-<ul th:if="${result2}">
-    <li th:each="e : ${result2}" th:text="${e.getType()} + ${e.getText()}"></li>
-</ul>
-
-
+    <div id="result-punctuation" th:if="${result2}">
+        <table>
+            <tr>
+                <th>Opis błędu</th>
+                <th>Dotyczy</th>
+            </tr>
+            <tr th:each="e : ${result2}">
+                <td th:text="${e.getType()}"></td>
+                <td th:text="${e.getText()}"></td>
+            </tr>
+        </table>
+    </div>
+</div>
 </body>
 </html>

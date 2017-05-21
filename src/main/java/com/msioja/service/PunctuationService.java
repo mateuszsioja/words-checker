@@ -3,9 +3,13 @@ package com.msioja.service;
 import com.msioja.model.PunctuationDictionary;
 import com.msioja.model.PunctuationError;
 import com.msioja.model.ShortcutsDictionary;
+import org.languagetool.JLanguageTool;
+import org.languagetool.language.Polish;
+import org.languagetool.rules.RuleMatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.text.BreakIterator;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -19,11 +23,13 @@ public class PunctuationService {
     private final ShortcutsDictionary shortcutsDictionary;
     private final PunctuationDictionary punctuationDictionary;
 
-    private static final String FIRST_LETTER_NOT_UPPERCASE = "Zdanie powinno zaczynać się od wielkiej litery. ";
-    private static final String LACK_OF_COMMA = "Brak przecinka. ";
-    private static final String REDUNDANT_COMMA = "Przecinek nie powinien tu wystapic. ";
+    private static final String FIRST_LETTER_NOT_UPPERCASE = "Zdanie powinno zaczynać się od wielkiej litery ";
+    private static final String LACK_OF_COMMA = "Prawdopodobnie brak przecinka ";
+    private static final String REDUNDANT_COMMA = "Prawdopodobnie przecinek nie powinien tu wystapic ";
+    private static final String LACK_OF_CLOSING_BRACKET = "Niesparowany symbol nawiasu ";
 
     private List<PunctuationError> abnormalities;
+    private boolean isPunctuationError = true;
 
     @Autowired
     public PunctuationService(ShortcutsDictionary shortcutsDictionary, PunctuationDictionary punctuationDictionary) {
@@ -31,13 +37,20 @@ public class PunctuationService {
         this.punctuationDictionary = punctuationDictionary;
     }
 
-    public List<PunctuationError> checkPunctuation(String stringToCheck) {
+    public List<PunctuationError> checkPunctuation(String stringToCheck) throws IOException {
         abnormalities = new ArrayList<>();
+        stringToCheck = stringToCheck.trim();
         List<String> sentences = splitIntoSentences(stringToCheck);
         sentences.forEach(this::checkIfSentenceStartsWithUppercase);
-        sentences.forEach(this::checkSingleWords);
-        sentences.forEach(this::checkMultipleWords);
+        sentences.forEach(this::checkSingleWordsPunctuation);
+        sentences.forEach(this::checkMultipleWordsPunctuation);
+        sentences.forEach(this::checkWhetherBracketsArePaired);
+        checkUsingTool(stringToCheck);
         return abnormalities;
+    }
+
+    private List<String> splitIntoWords(String text) {
+        return Arrays.asList(text.split(SPLIT_WORDS_REGEX));
     }
 
     private List<String> splitIntoSentences(String textToSplit) {
@@ -72,13 +85,8 @@ public class PunctuationService {
         }
     }
 
-    private List<String> splitIntoWords(String text) {
-        return Arrays.asList(text.split(SPLIT_WORDS_REGEX));
-    }
-
-    private void checkSingleWords(String sentence) {
+    private void checkSingleWordsPunctuation(String sentence) {
         List<String> words = splitIntoWords(sentence);
-
         for (int i = 1; i < words.size(); i++) {
             String word = words.get(i);
             String previousWord = words.get(i - 1);
@@ -88,10 +96,10 @@ public class PunctuationService {
                 Pattern p = Pattern.compile(singleWordInDictionary);
                 Matcher m = p.matcher(word);
                 if (m.find()) {
-                    int startIndex = m.start();
-                    int endIndex = m.end();
-                    String found = m.group();
-                    for (int j = endIndex; j < word.length(); j++) {
+                    if (m.start() != 0) {
+                        isWordMatches = false;
+                    }
+                    for (int j = m.end(); j < word.length(); j++) {
                         if (Character.isAlphabetic(word.charAt(j))) {
                             isWordMatches = false;
                             break;
@@ -104,51 +112,49 @@ public class PunctuationService {
                     }
                 }
             });
-
         }
     }
 
-    private void checkMultipleWords(String sentence) {
+    private void checkMultipleWordsPunctuation(String sentence) {
         List<String> words = splitIntoWords(sentence);
-
         for (int i = 1; i < words.size(); i++) {
-            String earlierThanPreviousWord = " ";
-            Character lastCharEarlierThanPreviousWord = ' ';
             String word = words.get(i);
             String previousWord = words.get(i - 1);
             Character lastCharPreviousWord = (previousWord.charAt(previousWord.length() - 1));
+            String earlierThanPreviousWord = " ";
+            Character lastCharEarlierThanPreviousWord = ' ';
             if (i > 1) {
                 earlierThanPreviousWord = words.get(i - 2);
                 lastCharEarlierThanPreviousWord = (earlierThanPreviousWord.charAt(earlierThanPreviousWord.length() - 1));
             }
-
             for (Map.Entry<String, List<String>> entry : punctuationDictionary.getMultipleWords().entrySet()) {
                 String wordInDictionary = entry.getKey();
                 List<String> listOfWordsInDictionary = entry.getValue();
-
                 boolean isMultiple = false;
                 boolean isWordMatches = true;
                 Pattern p = Pattern.compile(wordInDictionary);
                 Matcher m = p.matcher(word);
                 if (m.find()) {
-                    int endIndex = m.end();
-                    for (int j = endIndex; j < word.length(); j++) {
+                    if (m.start() != 0) {
+                        isWordMatches = false;
+                    }
+                    for (int j = m.end(); j < word.length(); j++) {
                         if (Character.isAlphabetic(word.charAt(j))) {
                             isWordMatches = false;
                             break;
                         }
                     }
                     for (String listWord : listOfWordsInDictionary) {
-                        if (previousWord.contains(listWord) && i > 1) {
+                        if (previousWord.replaceAll(",", "").equals(listWord) && i > 1) {
                             isMultiple = true;
                         }
                     }
-                    if (isWordMatches && !isMultiple && i > 1) {
+
+                    if (isWordMatches && !isMultiple) {
                         if (lastCharPreviousWord != ',') {
                             abnormalities.add(new PunctuationError(LACK_OF_COMMA, previousWord + " " + word));
                         }
-                    }
-                    else if (isWordMatches && isMultiple) {
+                    } else if (isWordMatches) {
                         if (lastCharPreviousWord == ',') {
                             abnormalities.add(new PunctuationError(REDUNDANT_COMMA, previousWord + " " + word));
                         }
@@ -161,4 +167,67 @@ public class PunctuationService {
             }
         }
     }
+
+    private void checkWhetherBracketsArePaired(String sentence) {
+        Deque<Character> stack = new ArrayDeque<>();
+        for (int i = 0; i < sentence.length(); i++) {
+            if (isBracketOpen(sentence.charAt(i))) {
+                stack.push(sentence.charAt(i));
+            }
+                switch (sentence.charAt(i)) {
+                    case CLOSING_ROUND_BRACKET:
+                        checkIfClosingBracketHasPair(OPENING_ROUND_BRACKET, stack.peek() != null ? stack.pop() : 'E');
+                        break;
+                    case CLOSING_SQUARE_BRACKET:
+                        checkIfClosingBracketHasPair(OPENING_SQUARE_BRACKET, stack.peek() != null ? stack.pop() : 'E');
+                        break;
+                    case CLOSING_CURLY_BRACKET:
+                        checkIfClosingBracketHasPair(OPENING_CURLY_BRACKET, stack.peek() != null ? stack.pop() : 'E');
+                        break;
+                }
+        }
+        checkIfUnclosedBracketsExists(stack.size(), stack.peek() != null ? stack.peek() : ' ');
+    }
+
+    private boolean isBracketOpen(char letter) {
+        return letter == OPENING_ROUND_BRACKET || letter == OPENING_SQUARE_BRACKET || letter == OPENING_CURLY_BRACKET;
+    }
+
+    private void checkIfClosingBracketHasPair(char bracket, char bracketOnStack) {
+        if (bracket != bracketOnStack || bracketOnStack == 'E') {
+            abnormalities.add(new PunctuationError(LACK_OF_CLOSING_BRACKET, String.valueOf(bracket)));
+        }
+    }
+
+    private void checkIfUnclosedBracketsExists(int stackSize, char higherElementOfStack) {
+        if (stackSize > 0) {
+            abnormalities.add(new PunctuationError(LACK_OF_CLOSING_BRACKET, String.valueOf(higherElementOfStack)));
+        }
+    }
+
+    private void checkUsingTool(String text) throws IOException {
+        JLanguageTool langTool = new JLanguageTool(new Polish());
+        List<RuleMatch> matches = langTool.check(text);
+        for (RuleMatch match : matches) {
+            if (match.getRule().getCategory().getId().toString().equals("PUNCTUATION")) {
+                isPunctuationError = true;
+                abnormalities.forEach(a -> {
+                    String found = match.getSuggestedReplacements().toString();
+                    int startIndex = found.indexOf(',') + 2;
+                    int endIndex = found.indexOf(' ', startIndex);
+                    endIndex = endIndex != -1 ? endIndex : found.length() - 1;
+                    found = found.substring(startIndex, endIndex);
+                    if (a.getText().contains(found) && !a.getType().equals(FIRST_LETTER_NOT_UPPERCASE)) {
+                        isPunctuationError = false;
+                    }
+                });
+
+                if (isPunctuationError && !match.getMessage().contains("<suggestion>")) {
+                    abnormalities.add(new PunctuationError("Blad interpunkcyjny ", match.getMessage() + " " +
+                            match.getSuggestedReplacements().toString().replaceAll("[\\[\\]]", "")));
+                }
+            }
+        }
+    }
+
 }

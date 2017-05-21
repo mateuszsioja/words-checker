@@ -13,10 +13,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.msioja.service.Constants.SPLIT_WORDS_REGEX;
@@ -78,9 +75,10 @@ public class InitDictionaryService {
         }
         HashMap<String, List<String>> map = new HashMap<>();
         for (String element : list) {
-            List<String> splitWords = Arrays.asList(element.split(SPLIT_WORDS_REGEX));
+            //List<String> splitWords = Arrays.asList(element.split(SPLIT_WORDS_REGEX));
+            List<String> splitWords = new LinkedList<>(Arrays.asList(element.split(SPLIT_WORDS_REGEX)));
             String firstWord = splitWords.get(0);
-//            splitWords.remove(0);
+            splitWords.remove(0);
             map.put(firstWord, splitWords);
         }
         return map;
