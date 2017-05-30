@@ -1,5 +1,8 @@
 package com.msioja.service;
 
+/**
+ * Class which contains regular expressions and brackets.
+ */
 abstract class Constants {
     static final String IGNORED_CHARS = "[\\-+.\\^:,?!'\"()\\[\\];<>]";
     static final String SPLIT_WORDS_REGEX = "\\s* \\s*";

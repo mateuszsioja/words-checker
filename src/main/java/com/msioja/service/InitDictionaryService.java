@@ -18,6 +18,9 @@ import java.util.stream.Collectors;
 
 import static com.msioja.service.Constants.SPLIT_WORDS_REGEX;
 
+/**
+ * Class that provides import all dictionaries into memory.
+ */
 @Service
 public class InitDictionaryService {
 
@@ -43,6 +46,10 @@ public class InitDictionaryService {
         this.punctuationDictionary = punctuationDictionary;
     }
 
+    /**
+     *  Method run at startup.
+     *  Sets all dictionaries.
+     */
     @PostConstruct
     public void initDictionaries() throws URISyntaxException {
         polishDictionary.setWords(importWords(PL_DICTIONARY_FILE_NAME));
@@ -52,6 +59,11 @@ public class InitDictionaryService {
         punctuationDictionary.setMultipleWords(importMultipleWords(PUNCTUATION_MULTIPLE_DICTIONARY_FILE_NAME));
     }
 
+    /**
+     * Imports single words from resource.
+     * @param fileName Name of the file containing the words to be imported.
+     * @return set of words.
+     */
     private HashSet<String> importWords(String fileName) throws URISyntaxException {
         ClassLoader classLoader = getClass().getClassLoader();
         Path file = Paths.get(classLoader.getResource(fileName).toURI());
@@ -63,6 +75,11 @@ public class InitDictionaryService {
         }
     }
 
+    /**
+     * Imports multiple words from resource.
+     * @param fileName Name of the file containing the words to be imported.
+     * @return set of words.
+     */
     private HashMap<String, List<String>> importMultipleWords(String fileName) throws URISyntaxException {
         ClassLoader classLoader = getClass().getClassLoader();
         Path file = Paths.get(classLoader.getResource(fileName).toURI());
@@ -75,7 +92,6 @@ public class InitDictionaryService {
         }
         HashMap<String, List<String>> map = new HashMap<>();
         for (String element : list) {
-            //List<String> splitWords = Arrays.asList(element.split(SPLIT_WORDS_REGEX));
             List<String> splitWords = new LinkedList<>(Arrays.asList(element.split(SPLIT_WORDS_REGEX)));
             String firstWord = splitWords.get(0);
             splitWords.remove(0);

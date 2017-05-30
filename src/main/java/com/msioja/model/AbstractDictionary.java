@@ -2,14 +2,18 @@ package com.msioja.model;
 
 import java.util.Set;
 
+/** Abstract class for all dictionaries stored in memory. */
 public abstract class AbstractDictionary {
 
+    /** Contains set of words for particular dictionary. */
     private Set<String> words;
 
+    /** @return set of words. */
     public Set<String> getWords() {
         return words;
     }
 
+    /** @param words set of words to be set. */
     public void setWords(Set<String> words) {
         this.words = words;
     }

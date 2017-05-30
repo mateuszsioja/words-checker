@@ -1,7 +1,14 @@
 package com.msioja.model;
 
+/**
+ *  Class which represents punctuation error.
+ */
 public class PunctuationError {
+
+    /** Type of punctuation error. */
     private String type;
+
+    /** Snippet of the text affected by punctuation error. */
     private String text;
 
     public PunctuationError(String type, String text) {
@@ -13,15 +20,7 @@ public class PunctuationError {
         return type;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public String getText() {
         return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
     }
 }

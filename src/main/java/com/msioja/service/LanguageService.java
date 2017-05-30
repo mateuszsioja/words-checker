@@ -11,6 +11,9 @@ import java.util.stream.Collectors;
 
 import static com.msioja.service.Constants.*;
 
+/**
+ * Class that provides language detection.
+ */
 @Service
 public class LanguageService {
 
@@ -27,6 +30,13 @@ public class LanguageService {
         this.englishDictionary = englishDictionary;
     }
 
+    /**
+     * Language detection in given text.
+     * Supports polish and english language.
+     * If polish and english words are detected, the method returns the language of the words, which was more.
+     * @param textToCheck Text in which the language will be checked.
+     * @return detected language of whole text.
+     */
     public String checkLanguage(String textToCheck) {
         int polishWordsCounter = 0, englishWordsCounter = 0;
 
@@ -45,6 +55,11 @@ public class LanguageService {
         return polishWordsCounter >= englishWordsCounter ? PL : EN;
     }
 
+    /**
+     * Language detection in given word based on polish and english dictionaries.
+     * @param wordToCheck Word in which the language will be checked.
+     * @return detected language of single word.
+     */
     private String checkWordLanguage(String wordToCheck) {
 
         if (englishDictionary.getWords().contains(wordToCheck))

@@ -25,6 +25,14 @@ public class WordsController {
         this.punctuationService = punctuationService;
     }
 
+
+    /**
+     * Returns view of home page.
+     *
+     * @param model content of previous language and punctuation text
+     *              should not be null so an empty string is passed.
+     * @return home page.
+     */
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String home(Model model) {
         model.addAttribute("previousLanguageText", "");
@@ -32,6 +40,14 @@ public class WordsController {
         return "home";
     }
 
+    /**
+     * Recognize language in given text and calculate time of response.
+     * Supports polish and english language.
+     *
+     * @param model result of language recognition, time of response.
+     * @param stringToCheck text in which the language is to be checked.
+     * @return home page with recognized language and time of response.
+     */
     @RequestMapping(value = "/check-language", method = RequestMethod.POST)
     public String checkLanguage(Model model, @RequestParam(value = "string") String stringToCheck) {
         long startTime = System.currentTimeMillis();
@@ -45,6 +61,15 @@ public class WordsController {
         return "home";
     }
 
+    /**
+     * Finds punctuation errors in given text and calculate time of response.
+     * Supports polish language.
+     *
+     * @param model result of punctuation errors, time of response.
+     * @param stringToCheck text in which the punctuation errors are to be checked.
+     * @return home page with found punctuation errors and time of response.
+     * @throws IOException thrown by Language Tool.
+     */
     @RequestMapping(value = "/check-punctuation", method = RequestMethod.POST)
     public String checkPunctuation(Model model, @RequestParam(value = "string") String stringToCheck) throws IOException {
         long startTime = System.currentTimeMillis();

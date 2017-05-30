@@ -17,12 +17,9 @@ chociażby
 choć
 choćby
 chybaby
-cokolwiek
 dlatego
 dokąd
 dokądkolwiek
-dopiero
-dopóki
 gdyby
 gdyż
 gdzie
@@ -30,8 +27,6 @@ gdziekolwiek
 ile
 ilekolwiek
 ilekroć
-ile razy
-im
 iżby
 jakby
 jakikolwiek
@@ -44,12 +39,8 @@ jednakże
 jeśliby
 jeżeliby
 kędy
-kiedy
 kiedykolwiek
 kiedyż
-kogo
-komu
-kto
 ktokolwiek
 którędy
 który
@@ -58,17 +49,12 @@ ledwie
 ledwo
 natomiast
 niech
-nim
-odkąd
 ponieważ
 póki
 przecież
 skąd
 skądkolwiek
-skoro
 wszakże
 wszelako
 zaledwie
-zanim
-zatem
 żeby
